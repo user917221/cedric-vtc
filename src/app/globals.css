@@ -1,119 +1,126 @@
-/* Complete Layout System & CSS Tokens for Cédric VTC */
-/* Inspired by aircenter.space layout architecture */
+/* Global styles combining aircenter.space layout and custom fonts */
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;500;600;700&family=Montserrat:wght@200;300;400;500;600&display=swap');
+@import "./global.css";
+@import "./landing.css";
 
+/* Custom theme overrides to make it Matte Black and Brilliant Silver */
 :root {
+  --c-black: #050505;
+  --c-black-rgb: 5,5,5;
+  --c-black-hover: #121212;
+  --c-black-hover-rgb: 18,18,18;
+  --c-grey: #9CA3AF;
+  --c-grey-rgb: 156,163,175;
+  --c-superlight: #181818;
+  --c-superlight-rgb: 24,24,24;
+  --c-white: #FFFFFF;
+  --c-white-rgb: 255,255,255;
+  --c-white-hover: #E5E7EB;
+  --c-white-hover-rgb: 229,231,235;
+
+  /* Font settings override to Onest & Cinzel */
+  --font-sans: 'Onest', sans-serif;
   --font-serif: 'Cinzel', serif;
-  --font-sans: 'Montserrat', sans-serif;
-
-  /* Matte Black / Deep Onyx Theme */
-  --bg-darker: #050505;
-  --bg-main: #0B0B0B;
-  --bg-card: #101010;
-  --bg-card-hover: #151515;
-  --bg-light: #1A1A1A;
-  
-  /* Brilliant Silver Theme */
-  --silver-primary: #FFFFFF;
-  --silver-light: #E5E7EB;
-  --silver-medium: #9CA3AF;
-  --silver-dark: #4B5563;
-  --silver-deep: #1F2937;
-  
-  --gradient-silver: linear-gradient(
-    135deg,
-    #FFFFFF 0%,
-    #E5E7EB 25%,
-    #9CA3AF 50%,
-    #E5E7EB 75%,
-    #FFFFFF 100%
-  );
-  --gradient-silver-text: linear-gradient(
-    135deg,
-    #FFFFFF 0%,
-    #D1D5DB 40%,
-    #9CA3AF 70%,
-    #FFFFFF 100%
-  );
-
-  /* Layout Constants */
-  --header-height: 80px;
-  --transition-smooth: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-fast: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-slow: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Reset */
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
 }
 
 body {
-  background-color: var(--bg-main);
-  color: var(--silver-light);
+  font-family: var(--font-sans) !important;
+  background-color: #050505 !important;
+  color: #E5E7EB !important;
+}
+
+.text-silver {
+  background: linear-gradient(135deg, #FFFFFF 0%, #D1D5DB 40%, #9CA3AF 70%, #FFFFFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Premium Awwwards UI Components */
+.btn-premium {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFFFFF;
+  color: #050505;
   font-family: var(--font-sans);
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Global Styles */
-h1, h2, h3, h4 {
-  font-family: var(--font-serif);
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  color: #FFFFFF;
-  line-height: 1.2;
-}
-
-p {
-  line-height: 1.7;
-  font-weight: 300;
-  color: var(--silver-medium);
-  font-size: 0.95rem;
-}
-
-a, button {
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 1.1rem 2.4rem;
+  border: 1px solid #FFFFFF;
+  border-radius: 0;
   cursor: pointer;
-  text-decoration: none;
-  color: inherit;
-  background: none;
-  border: none;
+  transition: all 0.4s cubic-bezier(0.25, 0.74, 0.22, 0.99);
 }
 
-/* Custom Selection */
-::selection {
-  background-color: var(--silver-light);
-  color: var(--bg-darker);
+.btn-premium:hover {
+  background-color: transparent;
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
 }
 
-/* AirCenter.space Grid & Layout Utilities */
-.container-h {
+.btn-premium-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 1.1rem 2.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.74, 0.22, 0.99);
+}
+
+.btn-premium-outline:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+.form-input {
   width: 100%;
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 0 4rem;
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  padding: 1.2rem 1.5rem;
+  border-radius: 0;
+  outline: none;
+  transition: all 0.4s cubic-bezier(0.25, 0.74, 0.22, 0.99);
 }
 
-@media (max-width: 768px) {
-  .container-h {
-    padding: 0 1.5rem;
-  }
+.form-input:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+select.form-input option {
+  background-color: #0A0A0A;
+  color: #FFFFFF;
+}
+
+/* Custom layout columns classes to match global.css gaps */
 .row {
   display: flex;
-  flex-wrap: wrap;
   margin-left: -1rem;
   margin-right: -1rem;
-}
-
-.row--pad {
-  margin-top: -1rem;
-  margin-bottom: -1rem;
+  flex-wrap: wrap;
 }
 
 .col {
@@ -121,244 +128,16 @@ a, button {
   padding-right: 1rem;
   flex-grow: 1;
   flex-basis: 0;
-  max-width: 100%;
 }
 
-/* Column sizes */
-.col--12 { flex: 0 0 100%; max-width: 100%; }
-.col--8 { flex: 0 0 66.666%; max-width: 66.666%; }
-.col--6 { flex: 0 0 50%; max-width: 50%; }
-.col--4 { flex: 0 0 33.333%; max-width: 33.333%; }
-.col--3 { flex: 0 0 25%; max-width: 25%; }
+.col--6 {
+  flex: 0 0 50%;
+  max-width: 50%;
+}
 
 @media (max-width: 768px) {
-  .col {
-    flex: 0 0 100% !important;
-    max-width: 100% !important;
+  .col--6 {
+    flex: 0 0 100%;
+    max-width: 100%;
   }
-  .row {
-    flex-direction: column;
-  }
-}
-
-/* Offset classes */
-.offset--6 { margin-left: 50%; }
-.offset--4 { margin-left: 33.333%; }
-
-@media (max-width: 768px) {
-  .offset--6, .offset--4 { margin-left: 0; }
-}
-
-/* Sticky Parallax Layouts (calqués sur aircenter.space) */
-.sticky {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-}
-
-.sticky--full-height {
-  height: 100vh;
-}
-
-.sticky__layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.sticky__layer--sticky {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  pointer-events: auto;
-}
-
-/* Background elements */
-.background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.background--cover {
-  background-size: cover;
-  background-position: center;
-}
-
-.img-cover {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.img-rounded {
-  border-radius: 4px;
-}
-
-/* Typography styles */
-.h1 {
-  font-size: clamp(3rem, 6.5vw, 6rem);
-  text-transform: uppercase;
-  line-height: 0.95;
-  font-weight: 500;
-}
-
-.h2 {
-  font-size: clamp(1.8rem, 3.8vw, 3.2rem);
-  line-height: 1.1;
-  font-weight: 400;
-}
-
-.text-silver {
-  background: var(--gradient-silver-text);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Awwwards Navigation Button */
-.btn-premium-outline {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.8rem 2.2rem;
-  font-family: var(--font-serif);
-  font-size: 0.8rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #FFFFFF;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  overflow: hidden;
-  z-index: 1;
-  transition: var(--transition-fast);
-}
-
-.btn-premium-outline::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 0%;
-  background: var(--gradient-silver);
-  z-index: -1;
-  transition: var(--transition-fast);
-}
-
-.btn-premium-outline:hover {
-  color: var(--bg-darker);
-  border-color: transparent;
-}
-
-.btn-premium-outline:hover::after {
-  height: 100%;
-}
-
-.btn-premium {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.9rem 2.4rem;
-  font-family: var(--font-serif);
-  font-size: 0.8rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--bg-darker);
-  background: var(--gradient-silver);
-  overflow: hidden;
-  z-index: 1;
-  transition: var(--transition-fast);
-  border-radius: 0;
-}
-
-.btn-premium::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    transparent 100%
-  );
-  transition: 0.8s;
-  z-index: 2;
-}
-
-.btn-premium:hover::before {
-  left: 100%;
-}
-
-.btn-premium:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-darker);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--silver-dark);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--silver-medium);
-}
-
-/* Form inputs matching AirCenter style */
-.form-input {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 1.1rem;
-  color: #FFFFFF;
-  font-family: var(--font-sans);
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
-  transition: var(--transition-fast);
-  border-radius: 0;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-/* Specific layouts (AirCenter patterns) */
-.l-intro-logo {
-  height: 30vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  background-color: var(--bg-darker);
-}
-
-/* Preloader custom style */
-.preloader__progress {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 2px;
-  background: var(--gradient-silver);
-  transition: width 0.1s linear;
 }
