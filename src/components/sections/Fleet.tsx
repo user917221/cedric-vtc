@@ -1,260 +1,410 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
-import { BatteryCharging, ShieldAlert, Sparkles, VolumeX } from "lucide-react";
+import { BatteryCharging, VolumeX, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function Fleet() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
+  const imageWrapperRef = useRef<HTMLDivElement>(null);
+  const text1Ref = useRef<HTMLDivElement>(null);
+  const text2Ref = useRef<HTMLDivElement>(null);
+  
+  const [activeSlide, setActiveSlide] = useState(1);
 
   useEffect(() => {
-    // Register ScrollTrigger plugin
     gsap.registerPlugin(ScrollTrigger);
 
-    const pin = gsap.fromTo(
-      sectionRef.current,
+    // Initial scale-up animation of the large introductory image on scroll
+    gsap.fromTo(
+      imageWrapperRef.current,
+      { scale: 1.15, filter: "brightness(0.2) grayscale(0.5)" },
       {
-        translateX: 0,
-      },
-      {
-        translateX: "-66.6vw",
+        scale: 1,
+        filter: "brightness(0.5) grayscale(0)",
         ease: "none",
         scrollTrigger: {
-          trigger: triggerRef.current,
-          pin: true,
-          scrub: 1,
-          start: "top top",
-          end: () => `+=${triggerRef.current?.offsetWidth}`,
-          invalidateOnRefresh: true,
+          trigger: containerRef.current,
+          start: "top bottom",
+          end: "top top",
+          scrub: true,
         },
       }
     );
 
+    // Timeline for the sticky section scroll transitions (like the AIR Format Section)
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: stickyRef.current,
+        pin: true,
+        start: "top top",
+        end: "+=150%",
+        scrub: 1,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          // Update counter based on scroll progress (1 or 2)
+          if (self.progress < 0.5) {
+            setActiveSlide(1);
+          } else {
+            setActiveSlide(2);
+          }
+        },
+      },
+    });
+
+    // Animate text transition: Fade out first vehicle, fade in second vehicle
+    tl.to(text1Ref.current, {
+      opacity: 0,
+      yPercent: -20,
+      duration: 0.8,
+      ease: "power2.inOut",
+    })
+    .fromTo(
+      text2Ref.current,
+      { opacity: 0, yPercent: 20 },
+      { opacity: 1, yPercent: 0, duration: 0.8, ease: "power2.out" },
+      "-=0.4"
+    );
+
+    // Subtle background zoom or color shift during the slide change
+    tl.to(imageWrapperRef.current, {
+      scale: 1.05,
+      yPercent: -5,
+      duration: 1.5,
+      ease: "none",
+    }, "-=1.2");
+
     return () => {
-      pin.kill();
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
 
-  const fleetItems = [
-    {
-      title: "Tesla Model S Plaid",
-      class: "PRESTIGE FIRST-CLASS",
-      desc: "L'ultime référence de la berline électrique. Performances hors normes, silence absolu, intérieur minimaliste ultra-luxueux avec filtration de l'air HEPA médicale.",
-      image: "/tesla.png",
-      specs: [
-        { label: "Puissance", val: "1020 ch" },
-        { label: "0-100 km/h", val: "2.1 s" },
-        { label: "Autonomie", val: "600 km" },
-        { label: "Capacité", val: "4 passagers" },
-      ],
-    },
-    {
-      title: "Tesla Model Y Grande Autonomie",
-      class: "BUSINESS SUV CLASS",
-      desc: "Idéal pour les voyages d'affaires ou les trajets avec bagages. Un toit vitré panoramique pour admirer Paris et un espace de rangement sans équivalent.",
-      image: "/tesla.png", // Re-using the premium Tesla image, can adjust styling
-      specs: [
-        { label: "Espace Coffre", val: "2100 L" },
-        { label: "Intérieur", val: "Premium noir" },
-        { label: "Autonomie", val: "533 km" },
-        { label: "Capacité", val: "4 passagers + bagages" },
-      ],
-    },
-  ];
-
   return (
-    <div ref={triggerRef} style={{ overflow: "hidden", backgroundColor: "var(--bg-darker)" }}>
-      {/* Pin Wrapper */}
+    <section ref={containerRef} id="flotte" style={{ backgroundColor: "var(--bg-darker)" }}>
+      {/* 1. Header (A new premium format intro block) */}
+      <div className="container-h" style={{ paddingTop: "8rem", paddingBottom: "4rem" }}>
+        <div style={{ maxWidth: "800px" }}>
+          <span
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.8rem",
+              letterSpacing: "0.45em",
+              color: "var(--silver-medium)",
+              textTransform: "uppercase",
+              display: "block",
+              marginBottom: "1.5rem",
+            }}
+          >
+            Le Standard de l'Éco-Luxe
+          </span>
+          <h2 className="h1" style={{ marginBottom: "2rem" }}>
+            Un Nouveau <span className="text-silver">Format Premium</span>
+          </h2>
+          <p style={{ fontSize: "1.2rem", lineHeight: "1.7", color: "var(--silver-medium)" }}>
+            Inspiré par le design d'avant-garde et la pureté des lignes, Cédric VTC propose un transport exclusif à bord de berlines électriques de prestige, sans compromis pour votre confort.
+          </p>
+        </div>
+      </div>
+
+      {/* 2. Panoramic Intro Image (l-format-image) */}
       <div
-        ref={sectionRef}
+        ref={imageWrapperRef}
         style={{
-          height: "100vh",
-          width: "300vw", // Three screens wide
-          display: "flex",
+          width: "100%",
+          height: "75vh",
           position: "relative",
+          overflow: "hidden",
+          backgroundColor: "#000000",
         }}
       >
-        {/* Slide 1: Introduction */}
-        <div
-          id="flotte"
+        <Image
+          src="/tesla.png"
+          alt="Tesla noire de prestige"
+          fill
+          priority
+          sizes="100vw"
           style={{
-            width: "100vw",
+            objectFit: "cover",
+            opacity: 0.6,
+          }}
+        />
+        {/* Subtle glass reflection overlay */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
             height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            padding: "0 10%",
-            backgroundColor: "var(--bg-main)",
+            background: "linear-gradient(180deg, var(--bg-darker) 0%, transparent 40%, transparent 60%, var(--bg-darker) 100%)",
+            pointerEvents: "none",
+          }}
+        />
+      </div>
+
+      {/* 3. Sticky Split Showroom (l-format-section with progress counter) */}
+      <div
+        ref={stickyRef}
+        style={{
+          height: "100vh",
+          width: "100%",
+          position: "relative",
+          display: "grid",
+          gridTemplateColumns: "1.2fr 1fr",
+          backgroundColor: "var(--bg-main)",
+          borderTop: "1px solid rgba(255, 255, 255, 0.03)",
+        }}
+      >
+        {/* Left Side: Pinned Vehicle Visual Frame */}
+        <div
+          style={{
             position: "relative",
+            width: "100%",
+            height: "100%",
+            overflow: "hidden",
+            backgroundColor: "var(--bg-darker)",
+            borderRight: "1px solid rgba(255, 255, 255, 0.03)",
           }}
         >
-          <div style={{ maxWidth: "600px" }}>
-            <span
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontSize: "0.8rem",
-                letterSpacing: "0.4em",
-                color: "var(--silver-medium)",
-                textTransform: "uppercase",
-                display: "block",
-                marginBottom: "1rem",
-              }}
-            >
-              Éco-Luxe & Technologie
+          {/* Slide 1 Image */}
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              opacity: activeSlide === 1 ? 1 : 0,
+              transition: "opacity 1s ease",
+            }}
+          >
+            <Image
+              src="/tesla.png"
+              alt="Tesla Model S Plaid"
+              fill
+              sizes="60vw"
+              style={{ objectFit: "cover", opacity: 0.4 }}
+            />
+          </div>
+
+          {/* Slide 2 Image */}
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              opacity: activeSlide === 2 ? 1 : 0,
+              transition: "opacity 1s ease",
+            }}
+          >
+            <Image
+              src="/tesla.png"
+              alt="Tesla Model Y"
+              fill
+              sizes="60vw"
+              style={{ objectFit: "cover", opacity: 0.35, filter: "hue-rotate(15deg)" }}
+            />
+          </div>
+
+          {/* Radial shadow overlay */}
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              background: "radial-gradient(circle, transparent 30%, var(--bg-main) 100%)",
+              pointerEvents: "none",
+            }}
+          />
+
+          {/* Floating specifications label */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "4rem",
+              left: "4rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.8rem",
+              background: "rgba(10, 10, 10, 0.6)",
+              backdropFilter: "blur(10px)",
+              padding: "0.8rem 1.6rem",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+            }}
+          >
+            <Sparkles size={14} color="var(--silver-medium)" />
+            <span style={{ fontSize: "0.75rem", letterSpacing: "0.2em", textTransform: "uppercase" }}>
+              {activeSlide === 1 ? "PRESTIGE BERLINE" : "BUSINESS SUV"}
             </span>
-            <h2
-              style={{
-                fontSize: "clamp(2rem, 5vw, 4rem)",
-                lineHeight: 1.1,
-                marginBottom: "2rem",
-              }}
-            >
-              Une Flotte Exclusive <span className="text-silver">100% Électrique</span>
-            </h2>
-            <p style={{ fontSize: "1.1rem", marginBottom: "3rem" }}>
-              Pour Cédric VTC, le luxe réside dans les détails. Voyagez à bord de véhicules silencieux d'exception, alliant élégance intemporelle et technologie de pointe.
-            </p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
-                <VolumeX color="var(--silver-medium)" size={24} />
-                <div>
-                  <h4 style={{ fontSize: "1rem", marginBottom: "0.3rem" }}>Silence Absolu</h4>
-                  <p style={{ fontSize: "0.85rem" }}>Cabine insonorisée pour un calme reposant.</p>
-                </div>
-              </div>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
-                <BatteryCharging color="var(--silver-medium)" size={24} />
-                <div>
-                  <h4 style={{ fontSize: "1rem", marginBottom: "0.3rem" }}>Zéro Émission</h4>
-                  <p style={{ fontSize: "0.85rem" }}>Un transport haut de gamme sans empreinte carbone.</p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* Slides 2 & 3: Vehicles */}
-        {fleetItems.map((item, idx) => (
-          <div
-            key={idx}
-            style={{
-              width: "100vw",
-              height: "100%",
-              backgroundColor: idx % 2 === 0 ? "var(--bg-darker)" : "var(--bg-main)",
-              display: "grid",
-              gridTemplateColumns: "1fr 1.2fr",
-              alignItems: "center",
-              padding: "0 8%",
-              gap: "4rem",
-              position: "relative",
-            }}
-          >
-            {/* Left side: Specs and details */}
-            <div style={{ zIndex: 2 }}>
-              <span
-                style={{
-                  fontFamily: "var(--font-sans)",
-                  fontSize: "0.8rem",
-                  letterSpacing: "0.3em",
-                  color: "var(--silver-medium)",
-                  display: "block",
-                  marginBottom: "0.5rem",
-                }}
-              >
-                {item.class}
-              </span>
-              <h3 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", marginBottom: "1.5rem" }}>
-                {item.title}
-              </h3>
-              <p style={{ marginBottom: "2.5rem", fontSize: "0.95rem" }}>{item.desc}</p>
-
-              {/* Technical Grid */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "1.5rem",
-                  borderTop: "1px solid rgba(255, 255, 255, 0.08)",
-                  paddingTop: "2rem",
-                }}
-              >
-                {item.specs.map((spec, sIdx) => (
-                  <div key={sIdx}>
-                    <span
-                      style={{
-                        display: "block",
-                        fontSize: "0.75rem",
-                        color: "var(--silver-dark)",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.1em",
-                      }}
-                    >
-                      {spec.label}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: "var(--font-serif)",
-                        fontSize: "1.5rem",
-                        color: "#FFFFFF",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {spec.val}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right side: Interactive Image Container */}
+        {/* Right Side: Sticky Text Details & Spec Sheet */}
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            height: "100%",
+            padding: "0 12%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          {/* Vertical Stack of Vehicle details */}
+          <div style={{ position: "relative", width: "100%" }}>
+            
+            {/* Vehicle 1 Details */}
             <div
+              ref={text1Ref}
               style={{
                 position: "relative",
                 width: "100%",
-                height: "60vh",
-                overflow: "hidden",
-                border: "1px solid rgba(255, 255, 255, 0.05)",
-                background: "radial-gradient(circle, #1a1a1a 0%, #070707 100%)",
-                boxShadow: "0 20px 50px rgba(0, 0, 0, 0.5)",
               }}
-              className="shine-hover"
             >
-              <Image
-                src={item.image}
-                alt={item.title}
-                fill
-                sizes="(max-width: 1200px) 100vw, 50vw"
-                style={{
-                  objectFit: "cover",
-                  mixBlendMode: "screen",
-                  opacity: 0.8,
-                }}
-              />
+              <span style={{ fontSize: "0.75rem", letterSpacing: "0.2em", color: "var(--silver-medium)" }}>
+                CATÉGORIE PRESTIGE
+              </span>
+              <h3 style={{ fontSize: "2.6rem", margin: "1rem 0 2rem 0", color: "#FFFFFF" }}>
+                Tesla Model S Plaid
+              </h3>
+              <p style={{ marginBottom: "3rem" }}>
+                L'alliance parfaite de la puissance ultime et du silence feutré. Une berline luxueuse dotée d'une insonorisation active et de sièges ventilés en cuir premium.
+              </p>
+
+              {/* Specs Grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+                <div>
+                  <h5 style={{ fontSize: "0.7rem", color: "var(--silver-dark)", textTransform: "uppercase" }}>
+                    Motorisation
+                  </h5>
+                  <span style={{ fontFamily: "var(--font-serif)", fontSize: "1.4rem" }}>1020 CH</span>
+                </div>
+                <div>
+                  <h5 style={{ fontSize: "0.7rem", color: "var(--silver-dark)", textTransform: "uppercase" }}>
+                    Autonomie
+                  </h5>
+                  <span style={{ fontFamily: "var(--font-serif)", fontSize: "1.4rem" }}>600 KM</span>
+                </div>
+                <div>
+                  <h5 style={{ fontSize: "0.7rem", color: "var(--silver-dark)", textTransform: "uppercase" }}>
+                    0-100 KM/H
+                  </h5>
+                  <span style={{ fontFamily: "var(--font-serif)", fontSize: "1.4rem" }}>2.1 SEC</span>
+                </div>
+                <div>
+                  <h5 style={{ fontSize: "0.7rem", color: "var(--silver-dark)", textTransform: "uppercase" }}>
+                    Confort cabine
+                  </h5>
+                  <span style={{ fontFamily: "var(--font-serif)", fontSize: "1.4rem" }}>SILENCE ABSOLU</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Vehicle 2 Details (Absolute overlay that GSAP animates in) */}
+            <div
+              ref={text2Ref}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                opacity: 0,
+                pointerEvents: activeSlide === 2 ? "auto" : "none",
+              }}
+            >
+              <span style={{ fontSize: "0.75rem", letterSpacing: "0.2em", color: "var(--silver-medium)" }}>
+                CATÉGORIE CAPACITÉ
+              </span>
+              <h3 style={{ fontSize: "2.6rem", margin: "1rem 0 2rem 0", color: "#FFFFFF" }}>
+                Tesla Model Y Premium
+              </h3>
+              <p style={{ marginBottom: "3rem" }}>
+                Voyagez avec de grands bagages sans aucun compromis. Un toit vitré panoramique majestueux pour admirer Paris, combiné à un confort de conduite surélevé.
+              </p>
+
+              {/* Specs Grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+                <div>
+                  <h5 style={{ fontSize: "0.7rem", color: "var(--silver-dark)", textTransform: "uppercase" }}>
+                    Volume Coffre
+                  </h5>
+                  <span style={{ fontFamily: "var(--font-serif)", fontSize: "1.4rem" }}>2100 LITRES</span>
+                </div>
+                <div>
+                  <h5 style={{ fontSize: "0.7rem", color: "var(--silver-dark)", textTransform: "uppercase" }}>
+                    Autonomie
+                  </h5>
+                  <span style={{ fontFamily: "var(--font-serif)", fontSize: "1.4rem" }}>530 KM</span>
+                </div>
+                <div>
+                  <h5 style={{ fontSize: "0.7rem", color: "var(--silver-dark)", textTransform: "uppercase" }}>
+                    Toit Panoramique
+                  </h5>
+                  <span style={{ fontFamily: "var(--font-serif)", fontSize: "1.4rem" }}>EN VERRE TOTAL</span>
+                </div>
+                <div>
+                  <h5 style={{ fontSize: "0.7rem", color: "var(--silver-dark)", textTransform: "uppercase" }}>
+                    Capacité
+                  </h5>
+                  <span style={{ fontFamily: "var(--font-serif)", fontSize: "1.4rem" }}>4 PAX + BAGAGES</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Sticky Progress Counter (calqué sur aircenter.space layout) */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "4rem",
+              right: "12%",
+              display: "flex",
+              alignItems: "center",
+              gap: "1.5rem",
+            }}
+          >
+            <div
+              style={{
+                width: "40px",
+                height: "1px",
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                position: "relative",
+              }}
+            >
               <div
                 style={{
                   position: "absolute",
-                  bottom: "2rem",
-                  left: "2rem",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  background: "rgba(0, 0, 0, 0.6)",
-                  backdropFilter: "blur(10px)",
-                  padding: "0.5rem 1rem",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  left: 0,
+                  top: 0,
+                  height: "100%",
+                  width: `${activeSlide * 50}%`,
+                  background: "var(--gradient-silver)",
+                  transition: "width 0.4s ease",
                 }}
-              >
-                <Sparkles size={14} color="var(--gold-accent)" />
-                <span style={{ fontSize: "0.75rem", letterSpacing: "0.1em" }}>CONFORT ULTIME</span>
-              </div>
+              />
             </div>
+            <span
+              style={{
+                fontFamily: "var(--font-serif)",
+                fontSize: "0.95rem",
+                color: "#FFFFFF",
+                letterSpacing: "0.1em",
+              }}
+            >
+              <span className="text-silver">{activeSlide}</span> / 2
+            </span>
           </div>
-        ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

@@ -2,9 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { ArrowDown, Shield, Compass, Star } from "lucide-react";
-import { motion } from "framer-motion";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motion } from "framer-motion";
+import { ArrowDown } from "lucide-react";
 import MagneticButton from "../ui/MagneticButton";
 
 interface HeroProps {
@@ -13,72 +13,76 @@ interface HeroProps {
 
 export default function Hero({ isLoaded }: HeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLDivElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
+  const leftLogoRef = useRef<HTMLSpanElement>(null);
+  const rightLogoRef = useRef<HTMLSpanElement>(null);
+  const introTextRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!isLoaded) return;
-
     gsap.registerPlugin(ScrollTrigger);
 
-    // Elegant entrance timeline
-    const tl = gsap.timeline();
+    if (!isLoaded) return;
 
-    tl.to(bgRef.current, {
-      scale: 1,
-      opacity: 0.45,
-      duration: 2.2,
-      ease: "power3.out",
-    })
+    // Entrance Animation (Preloader complete)
+    const entryTl = gsap.timeline();
+    entryTl
+      .to(bgRef.current, {
+        scale: 1,
+        opacity: 0.45,
+        duration: 2.2,
+        ease: "power3.out",
+      })
       .fromTo(
-        titleRef.current?.querySelectorAll(".char-anim") || [],
-        {
-          y: 100,
-          opacity: 0,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          stagger: 0.05,
-          duration: 1.2,
-          ease: "power4.out",
-        },
-        "-=1.5"
+        [leftLogoRef.current, rightLogoRef.current],
+        { y: 150, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.5, stagger: 0.1, ease: "power4.out" },
+        "-=1.6"
       )
       .fromTo(
-        subtitleRef.current,
-        {
-          y: 30,
-          opacity: 0,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          ease: "power3.out",
-        },
+        introTextRef.current,
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" },
         "-=0.8"
       )
       .fromTo(
         ctaRef.current,
-        {
-          y: 30,
-          opacity: 0,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          ease: "power3.out",
-        },
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.0, ease: "power3.out" },
         "-=0.6"
       );
 
+    // Scroll-driven Splitting Logo & Parallax (calqué sur aircenter.space)
+    // Left part "CÉDRIC" slides left, right part "VTC" slides right
+    gsap.to(leftLogoRef.current, {
+      xPercent: -40,
+      opacity: 0.1,
+      ease: "none",
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
+    });
+
+    gsap.to(rightLogoRef.current, {
+      xPercent: 40,
+      opacity: 0.1,
+      ease: "none",
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
+    });
+
+    // Background Parallax & Zoom-out
     gsap.to(bgRef.current, {
-      yPercent: 15,
-      scale: 0.95,
+      scale: 0.9,
+      yPercent: 10,
       opacity: 0.15,
       ease: "none",
       scrollTrigger: {
@@ -88,210 +92,216 @@ export default function Hero({ isLoaded }: HeroProps) {
         scrub: true,
       },
     });
+
+    // Content fade-out
+    gsap.to([introTextRef.current, ctaRef.current], {
+      yPercent: -20,
+      opacity: 0,
+      ease: "none",
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",
+        end: "50% top",
+        scrub: true,
+      },
+    });
   }, [isLoaded]);
 
   return (
     <section
-      id="accueil"
       ref={containerRef}
+      id="accueil"
       style={{
         position: "relative",
         width: "100%",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
+        height: "150vh", // Extra scroll height for parallax layers
         backgroundColor: "var(--bg-darker)",
-        overflow: "hidden",
-        padding: "8rem 2rem 2rem 2rem",
       }}
     >
-      {/* Background Image (Sleek Tesla in dark Parisian setting) */}
+      {/* Sticky Layer */}
       <div
-        ref={bgRef}
+        ref={stickyRef}
         style={{
-          position: "absolute",
+          position: "sticky",
           top: 0,
-          left: 0,
+          height: "100vh",
           width: "100%",
-          height: "100%",
-          backgroundImage: "url('/tesla.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          opacity: 0,
-          transform: "scale(1.15)",
-          zIndex: 1,
-          filter: "brightness(0.35) contrast(1.1)",
-        }}
-      />
-
-      {/* Luxury Vignette Overlay */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background:
-            "radial-gradient(circle, transparent 20%, var(--bg-darker) 100%)",
-          zIndex: 2,
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Hero Content */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 3,
-          textAlign: "center",
-          maxWidth: "1000px",
+          overflow: "hidden",
           display: "flex",
           flexDirection: "column",
+          justifyContent: "center",
           alignItems: "center",
-          gap: "2rem",
         }}
       >
-        {/* Subtle Luxury Ribbon */}
+        {/* Cinematic Background */}
         <div
-          ref={subtitleRef}
+          ref={bgRef}
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "1rem",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundImage: "url('/tesla.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             opacity: 0,
+            transform: "scale(1.2)",
+            zIndex: 1,
+            filter: "brightness(0.35) contrast(1.15) grayscale(0.2)",
           }}
-        >
-          <span style={{ width: "30px", height: "1px", backgroundColor: "var(--silver-medium)" }} />
-          <span
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.8rem",
-              letterSpacing: "0.4em",
-              textTransform: "uppercase",
-              color: "var(--silver-medium)",
-              fontWeight: 500,
-            }}
-          >
-            Chauffeur Privé Éco-Responsable
-          </span>
-          <span style={{ width: "30px", height: "1px", backgroundColor: "var(--silver-medium)" }} />
-        </div>
+        />
 
-        {/* Master Heading */}
-        <h1
-          ref={titleRef}
+        {/* Gradient Overlay */}
+        <div
           style={{
-            fontSize: "clamp(2.5rem, 8vw, 6.5rem)",
-            lineHeight: 0.95,
-            fontWeight: 700,
-            overflow: "hidden",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "radial-gradient(circle, transparent 20%, var(--bg-darker) 100%)",
+            zIndex: 2,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Scroll Content */}
+        <div
+          style={{
+            position: "relative",
+            zIndex: 3,
+            width: "100%",
+            textAlign: "center",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            gap: "2.5rem",
+            padding: "0 2rem",
           }}
         >
-          <span style={{ display: "block", overflow: "hidden" }}>
-            <span className="char-anim text-silver" style={{ display: "inline-block" }}>
-              CÉDRIC VTC
-            </span>
-          </span>
-        </h1>
-
-        <p
-          style={{
-            maxWidth: "600px",
-            fontSize: "clamp(0.95rem, 2vw, 1.2rem)",
-            fontWeight: 300,
-            color: "var(--silver-light)",
-            opacity: 0.8,
-            letterSpacing: "0.05em",
-          }}
-        >
-          Vivez l'excellence du transport premium en Tesla noire de prestige. Silencieuse, élégante et raffinée.
-        </p>
-
-        {/* Action Buttons */}
-        <div
-          ref={ctaRef}
-          style={{
-            display: "flex",
-            gap: "1.5rem",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            marginTop: "1.5rem",
-            opacity: 0,
-          }}
-        >
-          <MagneticButton
-            className="btn-premium"
-            onClick={() => {
-              document.getElementById("reservation")?.scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            Réserver un trajet
-          </MagneticButton>
-
-          <button
-            className="btn-premium-outline"
-            onClick={() => {
-              document.getElementById("flotte")?.scrollIntoView({ behavior: "smooth" });
-            }}
+          {/* Subtitle */}
+          <div
+            ref={introTextRef}
             style={{
-              borderRadius: "0",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "1rem",
+              opacity: 0,
             }}
           >
-            La Flotte Tesla
-          </button>
+            <span
+              style={{
+                fontFamily: "var(--font-sans)",
+                fontSize: "0.85rem",
+                letterSpacing: "0.5em",
+                textTransform: "uppercase",
+                color: "var(--silver-medium)",
+                fontWeight: 400,
+              }}
+            >
+              Chauffeur Privé Éco-Luxe • Paris
+            </span>
+          </div>
+
+          {/* Splitting Large Brand Mark */}
+          <h1
+            style={{
+              fontSize: "clamp(3.5rem, 12vw, 9rem)",
+              fontWeight: 700,
+              lineHeight: 0.9,
+              display: "flex",
+              justifyContent: "center",
+              gap: "2vw",
+              overflow: "hidden",
+              width: "100%",
+              pointerEvents: "none",
+            }}
+          >
+            <span ref={leftLogoRef} className="text-silver" style={{ display: "inline-block" }}>
+              CÉDRIC
+            </span>
+            <span ref={rightLogoRef} style={{ display: "inline-block", fontWeight: 200 }}>
+              VTC
+            </span>
+          </h1>
+
+          {/* Slogan */}
+          <div style={{ maxWidth: "650px", overflow: "hidden" }}>
+            <p
+              style={{
+                fontSize: "clamp(1rem, 2.5vw, 1.25rem)",
+                fontWeight: 300,
+                color: "var(--silver-light)",
+                lineHeight: "1.6",
+                letterSpacing: "0.05em",
+              }}
+            >
+              L'excellence silencieuse du transport haut de gamme en Tesla noire.
+            </p>
+          </div>
+
+          {/* Buttons */}
+          <div
+            ref={ctaRef}
+            style={{
+              display: "flex",
+              gap: "1.5rem",
+              marginTop: "1.5rem",
+              opacity: 0,
+            }}
+          >
+            <MagneticButton
+              className="btn-premium"
+              onClick={() => {
+                document.getElementById("reservation")?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Réserver un trajet
+            </MagneticButton>
+            <button
+              className="btn-premium-outline"
+              onClick={() => {
+                document.getElementById("flotte")?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Découvrir la flotte
+            </button>
+          </div>
+        </div>
+
+        {/* Scroll down indicator */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "3rem",
+            zIndex: 3,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "0.5rem",
+            opacity: 0.4,
+          }}
+        >
+          <span
+            style={{
+              fontSize: "0.6rem",
+              letterSpacing: "0.3em",
+              textTransform: "uppercase",
+              color: "var(--silver-medium)",
+            }}
+          >
+            Scroll
+          </span>
+          <motion.div
+            animate={{ y: [0, 6, 0] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          >
+            <ArrowDown size={12} color="white" />
+          </motion.div>
         </div>
       </div>
-
-      {/* Scroll Down Indicator */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: "3rem",
-          zIndex: 3,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "0.5rem",
-          opacity: 0.6,
-        }}
-      >
-        <span
-          style={{
-            fontSize: "0.65rem",
-            letterSpacing: "0.3em",
-            textTransform: "uppercase",
-            color: "var(--silver-medium)",
-          }}
-        >
-          Faites défiler
-        </span>
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
-        >
-          <ArrowDown size={14} color="white" />
-        </motion.div>
-      </div>
-
-      {/* Core Brand Values Panel */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          width: "100%",
-          background: "linear-gradient(to top, rgba(7,7,7,0.9) 0%, rgba(7,7,7,0) 100%)",
-          padding: "3rem 2rem",
-          zIndex: 3,
-          display: "none", // Will be visible on desktop grid
-        }}
-      />
     </section>
   );
 }

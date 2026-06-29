@@ -7,6 +7,8 @@ import CustomCursor from "@/components/ui/CustomCursor";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/sections/Hero";
 import Fleet from "@/components/sections/Fleet";
+import Harmony from "@/components/sections/Harmony";
+import TravelTimes from "@/components/sections/TravelTimes";
 import Services from "@/components/sections/Services";
 import Booking from "@/components/sections/Booking";
 import Footer from "@/components/Footer";
@@ -23,6 +25,8 @@ export default function Home() {
         <main style={{ minHeight: "100vh" }}>
           <Hero isLoaded={isLoaded} />
           <Fleet />
+          <Harmony />
+          <TravelTimes />
           <Services />
           <Booking />
         </main>
