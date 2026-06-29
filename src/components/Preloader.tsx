@@ -8,9 +8,29 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const numberRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
+  const leftPartRef = useRef<HTMLSpanElement>(null);
+  const rightPartRef = useRef<HTMLSpanElement>(null);
+  const subtitleRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Entrance animations on mount (sliding/merging letters like AIR Business Center)
+    gsap.fromTo(
+      leftPartRef.current,
+      { x: -80, opacity: 0, filter: "blur(5px)" },
+      { x: 0, opacity: 1, filter: "blur(0px)", duration: 1.4, ease: "power4.out" }
+    );
+    gsap.fromTo(
+      rightPartRef.current,
+      { x: 80, opacity: 0, filter: "blur(5px)" },
+      { x: 0, opacity: 1, filter: "blur(0px)", duration: 1.4, ease: "power4.out" }
+    );
+    gsap.fromTo(
+      subtitleRef.current,
+      { y: 20, opacity: 0 },
+      { y: 0, opacity: 0.6, duration: 1.2, ease: "power3.out", delay: 0.4 }
+    );
+
     // Elegant non-linear speed increase for luxury preloader feel
     let count = 0;
     const interval = setInterval(() => {
@@ -22,7 +42,7 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
       if (count === 100) {
         clearInterval(interval);
       }
-    }, 40);
+    }, 35);
 
     return () => clearInterval(interval);
   }, []);
@@ -40,12 +60,24 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
         duration: 0.6,
         ease: "power4.inOut",
       })
-      .to(logoRef.current, {
-        letterSpacing: "0.6em",
+      .to(leftPartRef.current, {
+        x: -40,
         opacity: 0,
         duration: 0.8,
         ease: "power3.inOut",
       }, "-=0.4")
+      .to(rightPartRef.current, {
+        x: 40,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.inOut",
+      }, "-=0.8")
+      .to(subtitleRef.current, {
+        y: -10,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power3.inOut",
+      }, "-=0.6")
       .to(lineRef.current, {
         scaleX: 0,
         duration: 0.6,
@@ -82,17 +114,27 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
           ref={logoRef}
           style={{
             fontFamily: "var(--font-serif)",
-            fontSize: "2rem",
-            letterSpacing: "0.3em",
+            fontSize: "2.2rem",
+            letterSpacing: "0.2em",
             color: "#FFFFFF",
-            transition: "all 0.8s ease",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-          <span className="text-silver">CÉDRIC VTC</span>
+          <div style={{ display: "flex", gap: "0.8rem", overflow: "hidden" }}>
+            <span ref={leftPartRef} className="text-silver" style={{ display: "inline-block" }}>
+              CÉDRIC
+            </span>
+            <span ref={rightPartRef} style={{ display: "inline-block", fontWeight: 300, opacity: 0.9 }}>
+              VTC
+            </span>
+          </div>
           <div
+            ref={subtitleRef}
             style={{
               fontSize: "0.7rem",
-              letterSpacing: "0.4em",
+              letterSpacing: "0.55em",
               color: "var(--silver-medium)",
               marginTop: "0.8rem",
               textTransform: "uppercase",
@@ -105,9 +147,9 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
         {/* Elegant loading line */}
         <div
           style={{
-            width: "200px",
+            width: "240px",
             height: "1px",
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
+            backgroundColor: "rgba(255, 255, 255, 0.08)",
             margin: "2rem auto 0 auto",
             position: "relative",
             overflow: "hidden",
@@ -138,7 +180,7 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
           right: "10%",
           fontFamily: "var(--font-serif)",
           fontSize: "6rem",
-          color: "rgba(255, 255, 255, 0.03)",
+          color: "rgba(255, 255, 255, 0.02)",
           fontWeight: 700,
         }}
       >

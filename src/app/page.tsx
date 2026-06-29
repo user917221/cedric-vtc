@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Preloader from "@/components/Preloader";
 import SmoothScroll from "@/components/ui/SmoothScroll";
+import CustomCursor from "@/components/ui/CustomCursor";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/sections/Hero";
 import Fleet from "@/components/sections/Fleet";
@@ -16,6 +17,7 @@ export default function Home() {
   return (
     <>
       <Preloader onComplete={() => setIsLoaded(true)} />
+      {isLoaded && <CustomCursor />}
       <SmoothScroll>
         <Navbar />
         <main style={{ minHeight: "100vh" }}>

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ArrowDown, Shield, Compass, Star } from "lucide-react";
 import { motion } from "framer-motion";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import MagneticButton from "../ui/MagneticButton";
 
 interface HeroProps {
@@ -19,6 +20,8 @@ export default function Hero({ isLoaded }: HeroProps) {
 
   useEffect(() => {
     if (!isLoaded) return;
+
+    gsap.registerPlugin(ScrollTrigger);
 
     // Elegant entrance timeline
     const tl = gsap.timeline();
@@ -72,6 +75,19 @@ export default function Hero({ isLoaded }: HeroProps) {
         },
         "-=0.6"
       );
+
+    gsap.to(bgRef.current, {
+      yPercent: 15,
+      scale: 0.95,
+      opacity: 0.15,
+      ease: "none",
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
+    });
   }, [isLoaded]);
 
   return (
