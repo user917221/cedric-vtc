@@ -8,7 +8,6 @@ import TravelTimes from "@/components/sections/TravelTimes";
 import Harmony from "@/components/sections/Harmony";
 import Booking from "@/components/sections/Booking";
 import Footer from "@/components/Footer";
-import CustomCursor from "@/components/ui/CustomCursor";
 import { SITE } from "@/lib/constants";
 
 const localBusinessJsonLd = {
@@ -31,7 +30,6 @@ const localBusinessJsonLd = {
 export default function Home() {
   return (
     <>
-      <CustomCursor />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}

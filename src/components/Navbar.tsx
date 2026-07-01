@@ -1,15 +1,23 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ArrowUpRight, Mail, Menu, X } from "lucide-react";
+import { ArrowUpRight, Copy, Mail, Menu, X } from "lucide-react";
 import { NAV_ITEMS, SITE } from "@/lib/constants";
 
 const ANCHOR_OFFSET = 88;
+const PREVIEW_EMAIL = "cedricexemple@mail.com";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [hasCopiedEmail, setHasCopiedEmail] = useState(false);
 
   const closeMenu = () => setIsOpen(false);
+
+  const copyPreviewEmail = async () => {
+    await navigator.clipboard.writeText(PREVIEW_EMAIL);
+    setHasCopiedEmail(true);
+    window.setTimeout(() => setHasCopiedEmail(false), 1400);
+  };
 
   const scrollToHash = (href: string) => {
     const targetId = href.replace("#", "");
@@ -63,13 +71,25 @@ export default function Navbar() {
                 </span>
               </button>
 
-              <a className="btn btn--secondary btn--sm btn--square vtc-icon-btn" href={SITE.mailto} aria-label="Écrire à Cédric VTC">
-                <span className="btn__content">
-                  <span className="btn__icon">
-                    <Mail size={18} />
+              <div className="vtc-mail-wrap">
+                <a className="btn btn--secondary btn--sm btn--square vtc-icon-btn vtc-mail-btn" href={SITE.mailto} aria-label="Écrire à Cédric VTC">
+                  <span className="btn__content">
+                    <span className="btn__icon">
+                      <Mail size={18} />
+                    </span>
                   </span>
-                </span>
-              </a>
+                </a>
+
+                <div className="vtc-mail-popover" aria-label="Email exemple à copier">
+                  <button className={`vtc-mail-copy ${hasCopiedEmail ? "is-copied" : ""}`} type="button" onClick={copyPreviewEmail}>
+                    <span className="vtc-mail-copy__text" aria-live="polite">
+                      <span className="vtc-mail-copy__email">{PREVIEW_EMAIL}</span>
+                      <span className="vtc-mail-copy__copied">Copié</span>
+                    </span>
+                    <Copy size={14} aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
             </div>
 
             <a

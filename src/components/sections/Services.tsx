@@ -26,14 +26,18 @@ export default function Services() {
 
       <div className="container-h vtc-services__stage">
         <div className="vtc-services__media">
-          <LocalImage
-            src={activeService.image}
-            alt={`${activeService.title} avec Cédric VTC en Tesla noire à Toulouse`}
-            loading="lazy"
-            width={1920}
-            height={1080}
-            sizes="(max-width: 900px) 100vw, 62vw"
-          />
+          {SERVICE_ITEMS.map((service, index) => (
+            <div className={`vtc-services__media-layer ${index === activeIndex ? "is-active" : ""}`} key={service.title} aria-hidden={index !== activeIndex}>
+              <LocalImage
+                src={service.image}
+                alt={`${service.title} avec Cédric VTC en Tesla noire à Toulouse`}
+                loading={index === 0 ? "eager" : "lazy"}
+                width={1920}
+                height={1080}
+                sizes="(max-width: 900px) 100vw, 62vw"
+              />
+            </div>
+          ))}
           <div className="vtc-services__media-label">
             <ActiveIcon size={20} />
             <span>{activeService.eyebrow}</span>
