@@ -1,64 +1,58 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { rawHtml } from "@/app/rawHtml";
+import Navbar from "@/components/Navbar";
+import Hero from "@/components/sections/Hero";
+import Services from "@/components/sections/Services";
+import Fleet from "@/components/sections/Fleet";
+import TravelTimes from "@/components/sections/TravelTimes";
+import Harmony from "@/components/sections/Harmony";
+import Booking from "@/components/sections/Booking";
+import Footer from "@/components/Footer";
+import CustomCursor from "@/components/ui/CustomCursor";
+import { SITE } from "@/lib/constants";
+
+const localBusinessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: SITE.name,
+  url: SITE.url,
+  email: SITE.email,
+  areaServed: [
+    "Toulouse",
+    "Toulouse-Blagnac",
+    "Gare Matabiau",
+    "Colomiers",
+    "Occitanie",
+  ],
+  description: SITE.description,
+  priceRange: "Sur devis",
+};
 
 export default function Home() {
-  const [mounted, setMounted] = useState(false);
+  return (
+    <>
+      <CustomCursor />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+      />
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-
-    // Inject scripts sequentially to match original dependency order
-    const scriptShared = document.createElement("script");
-    scriptShared.src = "/assets/javascripts/shared.js";
-    scriptShared.defer = true;
-    document.body.appendChild(scriptShared);
-
-    scriptShared.onload = () => {
-      const scriptLanding = document.createElement("script");
-      scriptLanding.src = "/assets/javascripts/landing.js";
-      scriptLanding.defer = true;
-      document.body.appendChild(scriptLanding);
-    };
-
-    return () => {
-      // Clean up injected scripts on unmount if necessary
-      try {
-        document.body.removeChild(scriptShared);
-      } catch (e) {}
-    };
-  }, [mounted]);
-
-  // Client-only render to prevent hydration mismatches with injected raw HTML
-  if (!mounted) {
-    return (
-      <div 
-        style={{
-          position: "fixed",
-          inset: 0,
-          backgroundColor: "#050505",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 9999
-        }}
-      >
-        <div style={{ fontFamily: "Cinzel, serif", fontSize: "1.5rem", letterSpacing: "0.2em", color: "#FFFFFF" }}>
-          CÉDRIC VTC
+      <div className="page-content-wrapper ui-light-background">
+        <Navbar />
+        <div className="page-content-wrapper__inner js-page-content-wrapper">
+          <div className="page-content js-page-content">
+            <main id="top" className="page-content__overflow-fix">
+              <Hero />
+              <Booking />
+              <Services />
+              <Fleet />
+              <TravelTimes />
+              <Harmony />
+              <Footer />
+            </main>
+          </div>
         </div>
       </div>
-    );
-  }
-
-  return (
-    <div 
-      dangerouslySetInnerHTML={{ __html: rawHtml }} 
-      style={{ minHeight: "100vh" }}
-    />
+    </>
   );
 }

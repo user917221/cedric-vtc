@@ -6,6 +6,7 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 export default function CustomCursor() {
   const [isVisible, setIsVisible] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(true); // Default true to prevent SSR mismatch/flash
 
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
@@ -15,6 +16,16 @@ export default function CustomCursor() {
   const cursorY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
+    // 1. Touch device detection (Norme 42 compliance)
+    const checkTouchDevice = () => {
+      const hasTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      setIsTouchDevice(hasTouch);
+    };
+    
+    checkTouchDevice();
+
+    if (isTouchDevice) return;
+
     const moveCursor = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
@@ -44,9 +55,9 @@ export default function CustomCursor() {
       window.removeEventListener("mousemove", moveCursor);
       window.removeEventListener("mouseover", handleMouseOver);
     };
-  }, [mouseX, mouseY, isVisible]);
+  }, [mouseX, mouseY, isVisible, isTouchDevice]);
 
-  if (!isVisible) return null;
+  if (isTouchDevice || !isVisible) return null;
 
   return (
     <>
@@ -83,7 +94,7 @@ export default function CustomCursor() {
           width: "6px",
           height: "6px",
           borderRadius: "50%",
-          backgroundColor: "#FFFFFF",
+          backgroundColor: "var(--c-white)",
           pointerEvents: "none",
           zIndex: 99999,
           translateX: "-50%",

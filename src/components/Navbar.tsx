@@ -1,260 +1,126 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Menu, X, Phone, Calendar } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import MagneticButton from "./ui/MagneticButton";
+import React, { useEffect, useState } from "react";
+import { ArrowUpRight, Mail, Menu, X } from "lucide-react";
+import { NAV_ITEMS, SITE } from "@/lib/constants";
+
+const ANCHOR_OFFSET = 88;
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const menuVariants = {
-    initial: {
-      clipPath: "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)",
-    },
-    animate: {
-      clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-      transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] as const },
-    },
-    exit: {
-      clipPath: "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)",
-      transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] as const },
-    },
+  const closeMenu = () => setIsOpen(false);
+
+  const scrollToHash = (href: string) => {
+    const targetId = href.replace("#", "");
+    const targetEl = document.getElementById(targetId);
+    if (!targetEl) return;
+
+    const offset = targetId === "reservation" ? 0 : ANCHOR_OFFSET;
+    const targetTop = targetEl.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
   };
 
-  const navLinks = [
-    { name: "Accueil", href: "#accueil" },
-    { name: "Services", href: "#services" },
-    { name: "Notre Flotte", href: "#flotte" },
-    { name: "Réservation", href: "#reservation" },
-  ];
+  const handleAnchor = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (!href.startsWith("#")) return;
+    event.preventDefault();
+    closeMenu();
+    scrollToHash(href);
+  };
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeMenu();
+    };
+
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      document.addEventListener("keydown", handleEscape);
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpen]);
 
   return (
     <>
-      <header
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          zIndex: 1000,
-          padding: "2rem",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mixBlendMode: "difference", // Awwwards overlap styling
-        }}
-      >
-        {/* Brand Logo */}
-        <a
-          href="#accueil"
-          style={{
-            fontFamily: "var(--font-serif)",
-            fontWeight: "700",
-            fontSize: "1.4rem",
-            letterSpacing: "0.15em",
-            color: "#FFFFFF",
-          }}
-        >
-          CÉDRIC<span style={{ fontWeight: "300", opacity: 0.8 }}> VTC</span>
-        </a>
+      <header className="header header--fixed ui-light vtc-nav" data-nosnippet="">
+        <div className="header__content container-h py-layout">
+          <nav className="group group--nav group--between header__nav" aria-label="Navigation principale">
+            <div className="btn-group btn-group--gap btn-container header__nav-last">
+              <button
+                className="btn btn--primary btn--sm btn--square vtc-icon-btn"
+                type="button"
+                onClick={() => setIsOpen((value) => !value)}
+                aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
+                aria-expanded={isOpen}
+                aria-controls="menu"
+              >
+                <span className="btn__content">
+                  <span className="btn__icon">{isOpen ? <X size={20} /> : <Menu size={22} />}</span>
+                </span>
+              </button>
 
-        {/* Action Button & Toggle */}
-        <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
-          {/* Quick Call */}
-          <a
-            href="tel:+33600000000"
-            className="btn-premium-outline"
-            style={{
-              padding: "0.6rem 1.5rem",
-              fontSize: "0.75rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              borderRadius: "0",
-              fontWeight: 400,
-            }}
-          >
-            <Phone size={14} />
-            <span>Appeler</span>
-          </a>
+              <a className="btn btn--secondary btn--sm btn--square vtc-icon-btn" href={SITE.mailto} aria-label="Écrire à Cédric VTC">
+                <span className="btn__content">
+                  <span className="btn__icon">
+                    <Mail size={18} />
+                  </span>
+                </span>
+              </a>
+            </div>
 
-          {/* Menu Toggle */}
-          <button
-            onClick={() => setIsOpen(true)}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#FFFFFF",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "0.5rem",
-            }}
-          >
-            <Menu size={28} />
-          </button>
+            <a
+              className="btn btn--primary btn--sm btn--rotation header__nav-wide-button vtc-nav-cta"
+              href="#reservation"
+              aria-label="Réserver une voiture"
+              onClick={(event) => handleAnchor(event, "#reservation")}
+            >
+              <span className="btn__content">
+                <span className="btn__text">Réserver une voiture</span>
+                <span className="btn__icon">
+                  <ArrowUpRight size={18} />
+                </span>
+              </span>
+            </a>
+          </nav>
         </div>
       </header>
 
-      {/* Fullscreen Overlay Navigation */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            variants={menuVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              backgroundColor: "var(--bg-darker)",
-              zIndex: 2000,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              padding: "10% 5%",
-            }}
-          >
-            {/* Close Button */}
-            <div
-              style={{
-                position: "absolute",
-                top: "2.5rem",
-                right: "2.5rem",
-              }}
-            >
-              <MagneticButton
-                onClick={() => setIsOpen(false)}
-                className="btn-premium-outline"
-                style={{
-                  borderRadius: "50%",
-                  width: "60px",
-                  height: "60px",
-                  padding: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <X size={24} />
-              </MagneticButton>
-            </div>
+      <div
+        className={`vtc-menu ${isOpen ? "is-open" : ""}`}
+        role="dialog"
+        aria-hidden={!isOpen}
+        aria-modal={isOpen}
+        aria-label="Menu principal"
+        id="menu"
+      >
+        <button className="vtc-menu__backdrop" type="button" aria-label="Fermer le menu" onClick={closeMenu} />
+        <div className="vtc-menu__panel">
+          <div className="vtc-menu__brand" aria-hidden="true">
+            <span>Cédric</span>
+            <span>VTC</span>
+          </div>
 
-            {/* Nav Menu Content */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr",
-                gap: "2.5rem",
-                maxWidth: "800px",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: "0.8rem",
-                  letterSpacing: "0.4em",
-                  color: "var(--silver-medium)",
-                  textTransform: "uppercase",
-                  marginBottom: "-1rem",
-                }}
-              >
-                Navigation
-              </div>
+          <nav className="vtc-menu__nav" aria-label="Sections du site">
+            {NAV_ITEMS.map((item) => (
+              <a href={item.href} onClick={(event) => handleAnchor(event, item.href)} key={item.href}>
+                <span>{item.label}</span>
+                <ArrowUpRight size={18} />
+              </a>
+            ))}
+          </nav>
 
-              {navLinks.map((link, index) => (
-                <motion.div
-                  key={link.name}
-                  initial={{ y: 80, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 + index * 0.1, duration: 0.6 }}
-                >
-                  <a
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    style={{
-                      fontFamily: "var(--font-serif)",
-                      fontSize: "3.5rem",
-                      fontWeight: 600,
-                      color: "#FFFFFF",
-                      display: "block",
-                      lineHeight: 1.1,
-                      transition: "var(--transition-smooth)",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateX(20px)";
-                      e.currentTarget.style.color = "var(--silver-medium)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "translateX(0px)";
-                      e.currentTarget.style.color = "#FFFFFF";
-                    }}
-                  >
-                    {link.name}
-                  </a>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Footer details in menu */}
-            <div
-              style={{
-                marginTop: "auto",
-                borderTop: "1px solid rgba(255, 255, 255, 0.05)",
-                paddingTop: "2rem",
-                display: "flex",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-                gap: "1.5rem",
-              }}
-            >
-              <div>
-                <p style={{ fontSize: "0.8rem", color: "var(--silver-dark)" }}>
-                  RÉSERVEZ EN DIRECT
-                </p>
-                <a
-                  href="tel:+33600000000"
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    color: "#FFFFFF",
-                    fontSize: "1.1rem",
-                    letterSpacing: "0.05em",
-                  }}
-                >
-                  +33 6 00 00 00 00
-                </a>
-              </div>
-              <div>
-                <p style={{ fontSize: "0.8rem", color: "var(--silver-dark)" }}>
-                  CONTACT
-                </p>
-                <a
-                  href="mailto:contact@cedric-vtc.fr"
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    color: "#FFFFFF",
-                    fontSize: "1.1rem",
-                    letterSpacing: "0.05em",
-                  }}
-                >
-                  contact@cedric-vtc.fr
-                </a>
-              </div>
-              <div>
-                <p style={{ fontSize: "0.8rem", color: "var(--silver-dark)" }}>
-                  DISPONIBLE
-                </p>
-                <p style={{ color: "#FFFFFF", fontSize: "1.1rem" }}>
-                  24/7 - Paris & Île-de-France
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          <div className="vtc-menu__actions">
+            <a href="#reservation" onClick={(event) => handleAnchor(event, "#reservation")}>
+              Réserver une voiture
+            </a>
+            <a href={SITE.mailto}>Écrire à Cédric</a>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

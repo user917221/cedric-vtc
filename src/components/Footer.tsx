@@ -1,174 +1,48 @@
 "use client";
 
-import { ArrowUp } from "lucide-react";
-import MagneticButton from "./ui/MagneticButton";
+import { ArrowUpRight, Mail } from "lucide-react";
+import { NAV_ITEMS, SITE } from "@/lib/constants";
 
 export default function Footer() {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   return (
-    <footer
-      style={{
-        backgroundColor: "#070707",
-        padding: "5rem 2rem 2rem 2rem",
-        borderTop: "1px solid rgba(255, 255, 255, 0.03)",
-        position: "relative",
-      }}
-    >
-      <div className="container">
-        {/* Main Footer Content */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "4rem",
-            marginBottom: "5rem",
-          }}
-        >
-          {/* Logo & Slogan */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            <h3
-              style={{
-                fontFamily: "var(--font-serif)",
-                fontWeight: "700",
-                fontSize: "1.6rem",
-                letterSpacing: "0.15em",
-                color: "#FFFFFF",
-              }}
-            >
-              CÉDRIC<span style={{ fontWeight: "300", opacity: 0.8 }}> VTC</span>
-            </h3>
-            <p style={{ fontSize: "0.9rem", color: "var(--silver-medium)", maxWidth: "300px" }}>
-              L'excellence du VTC de prestige 100% électrique à Paris et en Île-de-France. Le luxe silencieux de la mobilité verte.
-            </p>
-          </div>
+    <footer className="section ui-dark ui-background vtc-footer" data-nosnippet="">
+      <div className="container-h">
+        <div className="vtc-footer__brand">
+          <span>Cédric</span>
+          <span>VTC</span>
+        </div>
 
-          {/* Contact Details */}
+        <div className="vtc-footer__grid">
           <div>
-            <h4
-              style={{
-                fontSize: "0.8rem",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: "var(--silver-medium)",
-                marginBottom: "1.5rem",
-              }}
-            >
-              Renseignements
-            </h4>
-            <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.8rem", padding: 0 }}>
-              <li>
-                <a
-                  href="tel:+33600000000"
-                  style={{ fontSize: "0.95rem", color: "#FFFFFF", transition: "var(--transition-fast)" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = "var(--silver-medium)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "#FFFFFF")}
-                >
-                  +33 6 00 00 00 00
-                </a>
-              </li>
-              <li>
-                <a
-                  href="mailto:contact@cedric-vtc.fr"
-                  style={{ fontSize: "0.95rem", color: "#FFFFFF", transition: "var(--transition-fast)" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = "var(--silver-medium)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "#FFFFFF")}
-                >
-                  contact@cedric-vtc.fr
-                </a>
-              </li>
-              <li style={{ fontSize: "0.9rem", color: "var(--silver-medium)" }}>
-                Disponible 24 heures sur 24, 7 jours sur 7.
-              </li>
-            </ul>
+            <p className="vtc-footer__caption">Chauffeur privé à Toulouse</p>
+            <p>{SITE.description}</p>
           </div>
 
-          {/* Zones */}
+          <nav aria-label="Navigation pied de page">
+            <p className="vtc-footer__caption">Navigation</p>
+            {NAV_ITEMS.map((item) => (
+              <a href={item.href} key={item.href}>
+                {item.label}
+              </a>
+            ))}
+          </nav>
+
           <div>
-            <h4
-              style={{
-                fontSize: "0.8rem",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: "var(--silver-medium)",
-                marginBottom: "1.5rem",
-              }}
-            >
-              Secteurs Prise en charge
-            </h4>
-            <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.8rem", padding: 0 }}>
-              <li style={{ fontSize: "0.9rem", color: "var(--silver-medium)" }}>Paris & Métropole du Grand Paris</li>
-              <li style={{ fontSize: "0.9rem", color: "var(--silver-medium)" }}>Aéroports CDG, Orly, Le Bourget</li>
-              <li style={{ fontSize: "0.9rem", color: "var(--silver-medium)" }}>Gares Parisiennes</li>
-              <li style={{ fontSize: "0.9rem", color: "var(--silver-medium)" }}>Déplacements toutes distances</li>
-            </ul>
-          </div>
-
-          {/* Quick links & Back to top */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "2rem" }}>
-            <h4
-              style={{
-                fontSize: "0.8rem",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: "var(--silver-medium)",
-                marginBottom: "1.5rem",
-              }}
-            >
-              Retour en haut
-            </h4>
-            <MagneticButton
-              onClick={scrollToTop}
-              className="btn-premium-outline"
-              style={{
-                width: "50px",
-                height: "50px",
-                borderRadius: "50%",
-                padding: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <ArrowUp size={20} />
-            </MagneticButton>
+            <p className="vtc-footer__caption">Contact</p>
+            <a href={SITE.mailto} className="vtc-footer__mail">
+              <Mail size={17} />
+              {SITE.email}
+            </a>
+            <p>Sur réservation uniquement. Téléphone réel à confirmer.</p>
           </div>
         </div>
 
-        {/* Legal & Copyright */}
-        <div
-          style={{
-            borderTop: "1px solid rgba(255, 255, 255, 0.05)",
-            paddingTop: "2rem",
-            display: "flex",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "1rem",
-            fontSize: "0.8rem",
-            color: "var(--silver-dark)",
-          }}
-        >
-          <div>© {new Date().getFullYear()} Cédric VTC. Tous droits réservés.</div>
-          <div style={{ display: "flex", gap: "1.5rem" }}>
-            <a
-              href="#legal"
-              style={{ transition: "var(--transition-fast)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--silver-light)")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--silver-dark)")}
-            >
-              Mentions Légales
-            </a>
-            <a
-              href="#cgv"
-              style={{ transition: "var(--transition-fast)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--silver-light)")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--silver-dark)")}
-            >
-              CGV
-            </a>
-          </div>
+        <div className="vtc-footer__bottom">
+          <p>© 2026 Cédric VTC. Tous droits réservés.</p>
+          <a href={SITE.agencyUrl} target="_blank" rel="noopener noreferrer">
+            Fait par 42.
+            <ArrowUpRight size={15} />
+          </a>
         </div>
       </div>
     </footer>
