@@ -134,9 +134,6 @@ export default function Navbar() {
           </nav>
 
           <div className="vtc-menu__actions">
-            <a href="#reservation" onClick={(event) => handleAnchor(event, "#reservation")}>
-              Réserver une voiture
-            </a>
             <a href={SITE.mailto}>Écrire à Cédric</a>
           </div>
         </div>

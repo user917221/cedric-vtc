@@ -1,6 +1,7 @@
 "use client";
 
-import { ShieldCheck, UserRoundCheck, WalletCards } from "lucide-react";
+import { useState } from "react";
+import { ChevronDown, ShieldCheck, UserRoundCheck, WalletCards } from "lucide-react";
 import { FAQ_ITEMS } from "@/lib/constants";
 
 const trustItems = [
@@ -22,6 +23,8 @@ const trustItems = [
 ] as const;
 
 export default function Harmony() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
   return (
     <section id="faq" className="section ui-light ui-background vtc-faq" aria-labelledby="faq-title">
       <div className="container-h vtc-faq__grid">
@@ -47,12 +50,29 @@ export default function Harmony() {
         </div>
 
         <div className="vtc-faq__items">
-          {FAQ_ITEMS.map((item) => (
-            <details key={item.question}>
-              <summary>{item.question}</summary>
-              <p>{item.answer}</p>
-            </details>
-          ))}
+          {FAQ_ITEMS.map((item, index) => {
+            const isOpen = index === openIndex;
+            const panelId = `faq-panel-${index}`;
+
+            return (
+              <article className={`vtc-faq__item ${isOpen ? "is-open" : ""}`} key={item.question}>
+                <button
+                  type="button"
+                  aria-expanded={isOpen}
+                  aria-controls={panelId}
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                >
+                  <span>{item.question}</span>
+                  <ChevronDown size={20} />
+                </button>
+                <div className="vtc-faq__answer" id={panelId}>
+                  <div>
+                    <p>{item.answer}</p>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
