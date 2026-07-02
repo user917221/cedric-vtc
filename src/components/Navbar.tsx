@@ -24,7 +24,7 @@ export default function Navbar() {
     const targetEl = document.getElementById(targetId);
     if (!targetEl) return;
 
-    const offset = targetId === "reservation" ? 0 : ANCHOR_OFFSET;
+    const offset = targetId === "reservation" && window.innerWidth >= 768 ? 0 : ANCHOR_OFFSET;
     const targetTop = targetEl.getBoundingClientRect().top + window.scrollY - offset;
     window.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
   };
